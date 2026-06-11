@@ -7,8 +7,8 @@ spec:
   project: default
   source:
     repoURL: 'https://grafana.github.io/helm-charts'
-    chart: loki # Using the base chart but pinning it back to a version before the scalable validation split
-    targetRevision: 5.47.2 
+    chart: loki
+    targetRevision: 5.47.2
     helm:
       values: |
         loki:
@@ -19,8 +19,7 @@ spec:
             type: filesystem
           persistence:
             enabled: false
-          
-        # Explicitly turn off the modern microservice target frameworks completely
+
         singleBinary:
           replicas: 1
         backend:
@@ -29,7 +28,7 @@ spec:
           replicas: 0
         write:
           replicas: 0
-          
+
         monitoring:
           dashboards:
             enabled: false
@@ -40,6 +39,10 @@ spec:
           serviceMonitor:
             enabled: false
           selfMonitoring:
+            enabled: false
+            grafanaAgent:
+              installOperator: false
+          lokiCanary:
             enabled: false
   destination:
     server: 'https://kubernetes.default.svc'
