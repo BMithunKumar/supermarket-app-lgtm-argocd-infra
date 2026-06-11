@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: lgtm-monitoring-stack
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://grafana.github.io/helm-charts'
+    chart: lgtm-distributed # Installs Loki, Grafana, Tempo, and Mimir together
+    targetRevision: 0.3.0   # Fast, unified community layout for testing
+    helm:
+      values: |
+        grafana:
+          enabled: true
+          adminPassword: "admin"
+        loki:
+          enabled: true
+        tempo:
+          enabled: true
+        mimir:
+          enabled: true
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: monitoring # Deploys straight into your existing monitoring namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
