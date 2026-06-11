@@ -12,16 +12,27 @@ spec:
     helm:
       values: |
         deploymentMode: SingleBinary
+        
         loki:
           auth_enabled: false
           commonConfig:
             replication_factor: 1
           storage:
             type: filesystem
+            
         singleBinary:
           replicas: 1
           persistence:
             enabled: false
+
+        # ADD THESE BLOCKS TO FIX THE VALIDATION PANIC:
+        # This forcefully zeros out the scalable deployment targets
+        backend:
+          replicas: 0
+        read:
+          replicas: 0
+        write:
+          replicas: 0
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: monitoring
