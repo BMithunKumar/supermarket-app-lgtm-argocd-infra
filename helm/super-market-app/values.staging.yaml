@@ -1,17 +1,14 @@
 global:
   envName: "staging"
-
 backend:
   replicaCount: 3 # Scaled for localized testing simulations
   image:
-    repository: "your-docker-username/supermarket-backend"
-    tag: "latest"
-
+    repository: "mithunkumarb2026/supermarket-backend"
+    tag: "ef63a5602c657b486fe5231d9cfb9ce66ad6d5a1"
 frontend:
   replicaCount: 2
   image:
-    repository: "your-docker-username/supermarket-frontend"
-    tag: "latest"
-
+    repository: "mithunkumarb2026/supermarket-frontend"
+    tag: "ef63a5602c657b486fe5231d9cfb9ce66ad6d5a1"
 otel:
   collectorEndpoint: "http://opentelemetry-collector.monitoring.svc.cluster.local:4317"

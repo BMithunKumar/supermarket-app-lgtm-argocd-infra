@@ -1,17 +1,14 @@
 global:
   envName: "dev"
-
 backend:
   replicaCount: 1
   image:
-    repository: "your-docker-username/supermarket-backend"
-    tag: "latest" # Overwritten automatically by your GitHub Actions SHA
-
+    repository: "mithunkumarb2026/supermarket-backend"
+    tag: "ef63a5602c657b486fe5231d9cfb9ce66ad6d5a1" # Overwritten automatically by your GitHub Actions SHA
 frontend:
   replicaCount: 1
   image:
-    repository: "your-docker-username/supermarket-frontend"
-    tag: "latest" # Overwritten automatically by your GitHub Actions SHA
-
+    repository: "mithunkumarb2026/supermarket-frontend"
+    tag: "ef63a5602c657b486fe5231d9cfb9ce66ad6d5a1" # Overwritten automatically by your GitHub Actions SHA
 otel:
   collectorEndpoint: "http://opentelemetry-collector.monitoring.svc.cluster.local:4317"
