@@ -7,13 +7,22 @@ spec:
   project: default
   source:
     repoURL: 'https://grafana.github.io/helm-charts'
-    chart: loki
-    targetRevision: 6.6.0
+    chart: loki # Using the base chart but pinning it back to a version before the scalable validation split
+    targetRevision: 5.47.2 
     helm:
       values: |
-        deploymentMode: SingleBinary
-        
-        # Completely zero out the scalable component structures at the root level
+        loki:
+          auth_enabled: false
+          commonConfig:
+            replication_factor: 1
+          storage:
+            type: filesystem
+          persistence:
+            enabled: false
+          
+        # Explicitly turn off the modern microservice target frameworks completely
+        singleBinary:
+          replicas: 1
         backend:
           replicas: 0
         read:
@@ -21,35 +30,17 @@ spec:
         write:
           replicas: 0
           
-        # Force the single binary target configuration parameters
-        loki:
-          auth_enabled: false
-          commonConfig:
-            replication_factor: 1
-          storage:
-            type: filesystem
-          schemaConfig:
-            configs:
-              - from: "2024-01-01"
-                store: tsdb
-                object_store: filesystem
-                schema: v13
-                index:
-                  prefix: index_
-                  period: 24h
-
-        singleBinary:
-          replicas: 1
-          persistence:
+        monitoring:
+          dashboards:
             enabled: false
-
-        # Turn off all gateway and internal routing components that look for multiple pods
-        gateway:
-          enabled: false
-        resultsCache:
-          enabled: false
-        chunksCache:
-          enabled: false
+          rules:
+            enabled: false
+          alerts:
+            enabled: false
+          serviceMonitor:
+            enabled: false
+          selfMonitoring:
+            enabled: false
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: monitoring
