@@ -13,26 +13,43 @@ spec:
       values: |
         deploymentMode: SingleBinary
         
-        loki:
-          auth_enabled: false
-          commonConfig:
-            replication_factor: 1
-          storage:
-            type: filesystem
-            
-        singleBinary:
-          replicas: 1
-          persistence:
-            enabled: false
-
-        # ADD THESE BLOCKS TO FIX THE VALIDATION PANIC:
-        # This forcefully zeros out the scalable deployment targets
+        # Completely zero out the scalable component structures at the root level
         backend:
           replicas: 0
         read:
           replicas: 0
         write:
           replicas: 0
+          
+        # Force the single binary target configuration parameters
+        loki:
+          auth_enabled: false
+          commonConfig:
+            replication_factor: 1
+          storage:
+            type: filesystem
+          schemaConfig:
+            configs:
+              - from: "2024-01-01"
+                store: tsdb
+                object_store: filesystem
+                schema: v13
+                index:
+                  prefix: index_
+                  period: 24h
+
+        singleBinary:
+          replicas: 1
+          persistence:
+            enabled: false
+
+        # Turn off all gateway and internal routing components that look for multiple pods
+        gateway:
+          enabled: false
+        resultsCache:
+          enabled: false
+        chunksCache:
+          enabled: false
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: monitoring
