@@ -29,10 +29,10 @@ spec:
         write:
           replicas: 0
 
-        # ADD THIS BLOCK TO DISABLE THE STUCK HELM TEST VALIDATION:
         test:
           enabled: false
 
+        # TURN OFF ALL EXTERNAL PROMETHEUS/GRAFANA OPERATOR RULES:
         monitoring:
           dashboards:
             enabled: false
@@ -44,12 +44,6 @@ spec:
             enabled: false
           selfMonitoring:
             enabled: false
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: monitoring
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
+          # This prevents it from looking for grafanaagents.monitoring.grafana.com
+          lokiCanary:
+            enabled: false
