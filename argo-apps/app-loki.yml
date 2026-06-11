@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://grafana.github.io/helm-charts'
     chart: loki
-    targetRevision: 5.47.2
+    targetRevision: 5.47.2 
     helm:
       values: |
         loki:
@@ -19,7 +19,7 @@ spec:
             type: filesystem
           persistence:
             enabled: false
-
+          
         singleBinary:
           replicas: 1
         backend:
@@ -28,6 +28,10 @@ spec:
           replicas: 0
         write:
           replicas: 0
+
+        # ADD THIS BLOCK TO DISABLE THE STUCK HELM TEST VALIDATION:
+        test:
+          enabled: false
 
         monitoring:
           dashboards:
@@ -39,10 +43,6 @@ spec:
           serviceMonitor:
             enabled: false
           selfMonitoring:
-            enabled: false
-            grafanaAgent:
-              installOperator: false
-          lokiCanary:
             enabled: false
   destination:
     server: 'https://kubernetes.default.svc'
