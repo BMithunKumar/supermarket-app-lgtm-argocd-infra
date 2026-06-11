@@ -10,12 +10,14 @@ spec:
     chart: opentelemetry-collector
     targetRevision: 0.110.0
     helm:
-      # We use explicit parameters instead of a fragile raw string block
       parameters:
         - name: image.repository
           value: "otel/opentelemetry-collector-contrib"
         - name: image.tag
           value: "0.110.0"
+        # ADD THIS BLOCK TO FIX THE MODE ERROR:
+        - name: mode
+          value: "deployment"
       values: |
         config:
           receivers:
@@ -52,3 +54,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
