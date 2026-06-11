@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://prometheus-community.github.io/helm-charts'
     chart: kube-prometheus-stack
-    targetRevision: 61.3.0  # Stable production-ready meta-chart version
+    targetRevision: 61.3.0
     helm:
       values: |
         grafana:
@@ -24,18 +24,15 @@ spec:
               access: proxy
               url: http://lgtm-stack-tempo-distributor.monitoring.svc.cluster.local:4317
 
-        # Enable Loki (Logs) inside the same stack framework
         loki-distributed:
           enabled: true
           loki:
             structuredConfig:
               auth_enabled: false
 
-        # Enable Tempo (Traces) inside the same stack framework
         tempo-distributed:
           enabled: true
 
-        # Enable Mimir (Metrics) inside the same stack framework
         mimir-distributed:
           enabled: true
           mimir:
@@ -48,3 +45,8 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    # ADD THESE CRITICAL SYNC OPTIONS TO FIX THE TOO LONG BYTES ERROR:
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true  # Forces K8s to handle the massive CRDs on the server side instead of using annotations
+      - SkipDryRunOnMissingResource=true # Prevents Argo from panicking while the CRDs are spinning up
