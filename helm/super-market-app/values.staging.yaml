@@ -11,4 +11,4 @@ frontend:
     repository: "mithunkumarb2026/supermarket-frontend"
     tag: "ef63a5602c657b486fe5231d9cfb9ce66ad6d5a1"
 otel:
-  collectorEndpoint: "http://opentelemetry-collector.monitoring.svc.cluster.local:4317"
+  collectorEndpoint: "http://otel-collector-infrastructure-opentelemetry-collector.monitoring.svc.cluster.local:4317"

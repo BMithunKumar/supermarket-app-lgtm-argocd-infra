@@ -28,13 +28,16 @@ spec:
                   endpoint: 0.0.0.0:4318
           exporters:
             otlphttp/loki:
-              endpoint: "http://lgtm-stack-loki-gateway.monitoring.svc.cluster.local:3100/otlp"
+              endpoint: "http://loki-backend.monitoring.svc.cluster.local:3100/otlp"
+            
+            # CRITICAL FIX: Ensure the port targets tempo-backend on 4317 (OTLP ingest)
             otlp/tempo:
-              endpoint: "http://lgtm-stack-tempo-distributor.monitoring.svc.cluster.local:4317"
+              endpoint: "tempo-backend.monitoring.svc.cluster.local:4317"
               tls:
                 insecure: true
+                
             prometheusremotewrite:
-              endpoint: "http://lgtm-stack-mimir-nginx.monitoring.svc.cluster.local:8080/api/v1/push"
+              endpoint: "http://prometheus-backend-server.monitoring.svc.cluster.local:80/api/v1/write"
           service:
             pipelines:
               logs:

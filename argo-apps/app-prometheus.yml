@@ -18,6 +18,13 @@ spec:
         server:
           persistentVolume:
             enabled: false
+          
+          # FORCE STANDALONE PROMETHEUS TO SCRAPE THE OTEL COLLECTOR PIPELINE
+          extraScrapeConfigs: |
+            - job_name: 'otel-collector'
+              scrape_interval: 5s
+              static_configs:
+                - targets: ['otel-collector-infrastructure-opentelemetry-collector.monitoring.svc.cluster.local:8889']
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: monitoring
