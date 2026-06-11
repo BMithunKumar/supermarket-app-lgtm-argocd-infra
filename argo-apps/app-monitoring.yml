@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: otel-collector-infrastructure
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://open-telemetry.github.io/opentelemetry-helm-charts'
+    chart: opentelemetry-collector
+    targetRevision: 0.110.0
+    helm:
+      values: |
+        config:
+          receivers:
+            otlp:
+              protocols:
+                grpc:
+                  endpoint: 0.0.0.0:4317
+                http:
+                  endpoint: 0.0.0.0:4318
+          exporters:
+            otlphttp/loki:
+              endpoint: "http://loki-gateway.monitoring.svc.cluster.local:3100/otlp"
+            otlp/tempo:
+              endpoint: "tempo-distributor.monitoring.svc.cluster.local:4317"
+              tls:
+                insecure: true
+            prometheusremotewrite:
+              endpoint: "http://mimir-nginx.monitoring.svc.cluster.local:8080/api/v1/push"
+          service:
+            pipelines:
+              logs:
+                receivers: [otlp]
+                exporters: [otlphttp/loki]
+              traces:
+                receivers: [otlp]
+                exporters: [otlp/tempo]
+              metrics:
+                receivers: [otlp]
+                exporters: [prometheusremotewrite]
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

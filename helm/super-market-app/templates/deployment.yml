@@ -1,0 +1,73 @@
+# ========================================================
+# BACKEND DEPLOYMENT (FastAPI App with Auto-OTel Telemetry)
+# ========================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-backend
+  labels:
+    app: supermarket-backend
+    env: {{ .Values.global.envName }}
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  selector:
+    matchLabels:
+      app: supermarket-backend
+      env: {{ .Values.global.envName }}
+  template:
+    metadata:
+      labels:
+        app: supermarket-backend
+        env: {{ .Values.global.envName }}
+    spec:
+      containers:
+        - name: backend
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          # This tells the embedded OpenTelemetry SDK where to stream APM data
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: "supermarket-backend-{{ .Values.global.envName }}"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "{{ .Values.otel.collectorEndpoint }}"
+            - name: OTEL_TRACES_EXPORTER
+              value: "otlp"
+            - name: OTEL_METRICS_EXPORTER
+              value: "otlp"
+            - name: OTEL_LOGS_EXPORTER
+              value: "otlp"
+            - name: K8S_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+---
+# ========================================================
+# FRONTEND DEPLOYMENT (Nginx Serving Dashboard HTML UI)
+# ========================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-frontend
+  labels:
+    app: supermarket-frontend
+    env: {{ .Values.global.envName }}
+spec:
+  replicas: {{ .Values.frontend.replicaCount }}
+  selector:
+    matchLabels:
+      app: supermarket-frontend
+      env: {{ .Values.global.envName }}
+  template:
+    metadata:
+      labels:
+        app: supermarket-frontend
+        env: {{ .Values.global.envName }}
+    spec:
+      containers:
+        - name: frontend
+          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80

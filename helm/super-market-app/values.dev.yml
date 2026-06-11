@@ -1,0 +1,17 @@
+global:
+  envName: "dev"
+
+backend:
+  replicaCount: 1
+  image:
+    repository: "your-docker-username/supermarket-backend"
+    tag: "latest" # Overwritten automatically by your GitHub Actions SHA
+
+frontend:
+  replicaCount: 1
+  image:
+    repository: "your-docker-username/supermarket-frontend"
+    tag: "latest" # Overwritten automatically by your GitHub Actions SHA
+
+otel:
+  collectorEndpoint: "http://opentelemetry-collector.monitoring.svc.cluster.local:4317"
