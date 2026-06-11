@@ -1,28 +1,49 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: lgtm-monitoring-stack
+  name: lgtm-stack
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: 'https://grafana.github.io/helm-charts'
-    chart: lgtm-distributed # Installs Loki, Grafana, Tempo, and Mimir together
-    targetRevision: 0.3.0   # Fast, unified community layout for testing
+    repoURL: 'https://prometheus-community.github.io/helm-charts'
+    chart: kube-prometheus-stack
+    targetRevision: 61.3.0  # Stable production-ready meta-chart version
     helm:
       values: |
         grafana:
           enabled: true
           adminPassword: "admin"
-        loki:
+          additionalDataSources:
+            - name: Loki
+              type: loki
+              access: proxy
+              url: http://lgtm-stack-loki-gateway.monitoring.svc.cluster.local:3100
+            - name: Tempo
+              type: tempo
+              access: proxy
+              url: http://lgtm-stack-tempo-distributor.monitoring.svc.cluster.local:4317
+
+        # Enable Loki (Logs) inside the same stack framework
+        loki-distributed:
           enabled: true
-        tempo:
+          loki:
+            structuredConfig:
+              auth_enabled: false
+
+        # Enable Tempo (Traces) inside the same stack framework
+        tempo-distributed:
           enabled: true
-        mimir:
+
+        # Enable Mimir (Metrics) inside the same stack framework
+        mimir-distributed:
           enabled: true
+          mimir:
+            structuredConfig:
+              multitenancy_enabled: false
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: monitoring # Deploys straight into your existing monitoring namespace
+    namespace: monitoring
   syncPolicy:
     automated:
       prune: true

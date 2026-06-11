@@ -15,7 +15,6 @@ spec:
           value: "otel/opentelemetry-collector-contrib"
         - name: image.tag
           value: "0.110.0"
-        # ADD THIS BLOCK TO FIX THE MODE ERROR:
         - name: mode
           value: "deployment"
       values: |
@@ -29,13 +28,13 @@ spec:
                   endpoint: 0.0.0.0:4318
           exporters:
             otlphttp/loki:
-              endpoint: "http://loki-gateway.monitoring.svc.cluster.local:3100/otlp"
+              endpoint: "http://lgtm-stack-loki-gateway.monitoring.svc.cluster.local:3100/otlp"
             otlp/tempo:
-              endpoint: "tempo-distributor.monitoring.svc.cluster.local:4317"
+              endpoint: "http://lgtm-stack-tempo-distributor.monitoring.svc.cluster.local:4317"
               tls:
                 insecure: true
             prometheusremotewrite:
-              endpoint: "http://mimir-nginx.monitoring.svc.cluster.local:8080/api/v1/push"
+              endpoint: "http://lgtm-stack-mimir-nginx.monitoring.svc.cluster.local:8080/api/v1/push"
           service:
             pipelines:
               logs:
