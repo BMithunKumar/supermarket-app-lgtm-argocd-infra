@@ -18,8 +18,8 @@ spec:
         server:
           persistentVolume:
             enabled: false
-          
-          # FORCE STANDALONE PROMETHEUS TO SCRAPE THE OTEL COLLECTOR PIPELINE
+          extraFlags:
+            - web.enable-remote-write-receiver
           extraScrapeConfigs: |
             - job_name: 'otel-collector'
               scrape_interval: 5s

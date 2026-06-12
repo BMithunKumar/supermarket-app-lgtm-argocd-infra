@@ -27,22 +27,27 @@ spec:
                 http:
                   endpoint: 0.0.0.0:4318
           exporters:
-            otlphttp/loki:
-              endpoint: "http://loki-backend.monitoring.svc.cluster.local:3100/otlp"
-            
-            # CRITICAL FIX: Ensure the port targets tempo-backend on 4317 (OTLP ingest)
+            loki:
+              endpoint: "http://loki-backend.monitoring.svc.cluster.local:3100/loki/api/v1/push"
+              default_labels_enabled:
+                exporter: true
+                job: true
+                instance: true
+                level: true
+
             otlp/tempo:
               endpoint: "tempo-backend.monitoring.svc.cluster.local:4317"
               tls:
                 insecure: true
-                
+
             prometheusremotewrite:
               endpoint: "http://prometheus-backend-server.monitoring.svc.cluster.local:80/api/v1/write"
+
           service:
             pipelines:
               logs:
                 receivers: [otlp]
-                exporters: [otlphttp/loki]
+                exporters: [loki]
               traces:
                 receivers: [otlp]
                 exporters: [otlp/tempo]
