@@ -20,7 +20,6 @@ spec:
             enabled: false
           extraArgs:
             web.enable-remote-write-receiver: ""
-            web.enable-lifecycle: ""
           extraScrapeConfigs: |
             - job_name: 'otel-collector'
               scrape_interval: 5s
